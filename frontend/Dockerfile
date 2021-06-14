@@ -1,11 +1,11 @@
-FROM node:lts-alpine as build-stage
-WORKDIR /app
-COPY package*.json ./
-RUN yarn install
-COPY . .
-RUN yarn build
+FROM node:16-alpine
 
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+ENV VUE_APP_API_URL=http://api.belajar-docker.com
+
+RUN mkdir /app
+
+COPY . /app
+
+RUN yarn --cwd /app install
+
+CMD ["yarn", "--cwd", "/app", "serve"]

@@ -1,6 +1,5 @@
 import axios from 'axios';
 
 export default axios.create({
-    // For dev running from docker
-    baseURL: "http://localhost:8080",
+    baseURL: process.env.VUE_APP_API_URL || "http://localhost:8080",
 });
