@@ -8,4 +8,4 @@ COPY . /app
 
 RUN yarn --cwd /app install
 
-CMD ["yarn", "--cwd", "/app", "serve"]
+CMD ["yarn", "--cwd" ,"/app", "serve"]
