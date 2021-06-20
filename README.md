@@ -7,7 +7,9 @@ TODO app ini adalah contoh app untuk mendemokan proses membuat aplikasi dengan D
 
 Semua komponen dipackage dengan docker
 
-## Menjalankan dengan Docker
+## Menjalankan Postgres dengan Docker
+
+Dari [Video ke-8](https://www.youtube.com/watch?v=45FjeTSla3o)
 
 Step 1: Jalankan Postgres
 ```bash
@@ -44,4 +46,61 @@ Step 6: Cek input TODO tersimpan di database
 ```bash
 docker exec -it todo-postgres psql -U postgres -W belajar
 SELECT * FROM todo;
+```
+
+## Menjalankan Semuanya sebagai Docker Container
+
+Dari [Video ke-9](https://www.youtube.com/watch?v=OYJf_xLeB9o) dan [ke-10](https://www.youtube.com/watch?v=gRlioOhPkEo)
+
+Step 1: Buat Docker Network
+```bash
+docker network create todo
+```
+
+Step 2: Jalankan Docker postgres di dalam network
+```bash
+docker run -d \
+-p 5432:5432 \
+--name todo-postgres \
+-e POSTGRES_USER=postgres \
+-e POSTGRES_PASSWORD=rahasia \
+-e POSTGRES_DB=belajar \
+-v $(pwd)/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql \
+--network todo \
+postgres
+```
+
+Step 3: Buat docker image untuk backend
+```bash
+cd backend
+docker build -t todo-backend:v1 .
+```
+
+Step 4: Jalankan backend sebagai docker container di dalam network
+```bash
+docker run -d \
+-p 8080:8080 \
+--name todo-backend \
+-e DB_USER=postgres \
+-e DB_PASSWORD=rahasia \
+-e DB_HOST=todo-postgres \
+-e DB_PORT=5432 \
+-e DB_DATABASE=belajar \
+--network todo \
+todo-backend:v1
+```
+
+Step 5: Buat docker image untuk frontend
+```bash
+cd frontend
+docker build -t todo-frontend:v1 .
+```
+
+Step 6: Jalankan frontend sebagai docker container
+```bash
+docker run -d \
+-p 8081:8080 \
+--name todo-frontend \
+--network todo \
+todo-frontend:v1
 ```
