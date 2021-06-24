@@ -1,0 +1,28 @@
+version: '3'
+services:
+    todo-postgres:
+        image: postgres
+        ports:
+            - 5432:5432
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=rahasia
+            - POSTGRES_DB=belajar
+        volumes:
+            - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    todo-backend:
+        build: ./backend
+        ports:
+            - 8080:8080
+        environment:
+            - DB_USER=postgres
+            - DB_PASSWORD=rahasia
+            - DB_HOST=todo-postgres
+            - DB_PORT=5432
+            - DB_DATABASE=belajar
+        depends_on:
+            - todo-postgres
+    todo-frontend:
+        build: ./frontend
+        ports:
+            - 8081:8080
